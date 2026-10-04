@@ -259,8 +259,8 @@ local function loadVietnamese()
         ["Unload"] = "Tắt Script Hoàn Toàn",
         ["Theme"] = "Giao Diện & Màu Sắc",
         ["Load"] = "Tải Cấu Hình",
-        ["Set autoload"] = " Tự Động Tải Cấu Hình",
-        ["Clear autoload"] = "Xóa Tự Động Tải Cấu Hình"
+        ["Set autoload"] = "Auto Cấu Hình",
+        ["Clear autoload"] = "Xóa Auto Cấu Hình"
     }
 
     local function translateText(originalText)
