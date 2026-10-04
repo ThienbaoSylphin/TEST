@@ -84,6 +84,14 @@ local function loadVietnamese()
     
     -- Từ điển dịch thuật
     local Translations = {
+        ["BigFroot"] = "BF SylPhin",
+        ["Home"] = "Trang Chủ",
+        ["Announcements"] = "Thông Báo",
+        ["Quick actions"] = "Thao Tác Nhanh",
+        ["Stats"] = "Thống Kê",
+        ["Account"] = " Tài Khoản",
+        ["Key status"] = "Loại Key",
+        ["Replace key"] = "Thay Đổi Key"
         ["Auto Steal"] = "Tự Động Trộm",
         ["Eggs"] = "Trứng",
         ["Progression"] = "Tiến Trình Phát Triển",
@@ -163,7 +171,7 @@ local function loadVietnamese()
         ["Auto Sell Selected"] = "Tự Bán Trứng Đã Chọn",
         ["Auto Sell All Eligible"] = "Tự Bán Tất Cả Trứng Đủ Điều Kiện",
         ["Sell Eggs Below KG"] = "Bán Trứng Dưới KG",
-        ["Sell Eggs Below"] = "Bán Trứng Dưới",
+        ["Sell Eggs Below $/s"] = "Bán Trứng Dưới $/s",
         ["put so it will work"] = "chỉnh để nó hoạt động",
         ["Egg Sell Status"] = "Trạng Thái Bán Trứng",
         ["Upgrades"] = "Nâng Cấp",
@@ -249,7 +257,10 @@ local function loadVietnamese()
         ["Dim background"] = "Làm Tối Màn Hình Nền",
         ["Font"] = "Phông Chữ",
         ["Unload"] = "Tắt Script Hoàn Toàn",
-        ["Theme"] = "Giao Diện & Màu Sắc"
+        ["Theme"] = "Giao Diện & Màu Sắc",
+        ["Load"] = "Tải Cấu Hình",
+        ["Set autoload"] = " Tự Động Tải Cấu Hình",
+        ["Clear autoload"] = "Xóa Tự Động Tải Cấu Hình"
     }
 
     local function translateText(originalText)
