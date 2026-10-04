@@ -1,726 +1,288 @@
--- ==============================================================================
---  CHILLI HUB V2 - PRECISION 3-PART SOFT BLUE (STRICT MENU ISOLATION)
---  Tối ưu hóa:
---    1. CÔ LẬP TUYỆT ĐỐI: CHỈ đổi màu đúng 3 phần (Header, Cột Tab trái, Cột nút phải).
---    2. KHÔNG CAN THIỆP GAME: Tuyệt đối không đụng vào nút game hay menu nội dung bên trong.
---    3. CHỮ TRẮNG NỔI KHỐI: Khóa cứng màu chữ trắng tinh (RGB 255, 255, 255) viền đen nguyên bản.
---    4. XANH NHẠT DỊU MẮT: Phối màu Soft Pastel Sky Blue nhẹ nhàng, không đậm, không chói.
---    5. DỊCH THUẬT 100%: Giữ trọn bộ từ điển Master V5.0 cho toàn bộ hệ thống.
--- ==============================================================================
+-- ====================================================================
+-- BIGFROOT SCRIPT LOADER (CHỌN NGÔN NGỮ / LANGUAGE SELECTOR)
+-- ====================================================================
 
 local CoreGui = game:GetService("CoreGui")
 local Players = game:GetService("Players")
-local TweenService = game:GetService("TweenService")
-local RunService = game:GetService("RunService")
 local LocalPlayer = Players.LocalPlayer
 
--- ==================== 1. NẠP SCRIPT CHILLI HUB GỐC ====================
-task.spawn(function()
-    pcall(function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/hanniii1/Loader/refs/heads/main/BFLoader.lua"))()
-    end)
-end)
+-- Tạo UI Chọn Ngôn Ngữ
+local LangGui = Instance.new("ScreenGui")
+LangGui.Name = "BigFrootLangSelector"
+LangGui.Parent = CoreGui:FindFirstChild("RobloxGui") or (LocalPlayer and LocalPlayer:FindFirstChild("PlayerGui")) or CoreGui
 
--- ==================== 2. TỪ ĐIỂN DỊCH THUẬT MASTER ====================
-local currentLanguage = "VI"
-local FastCache = {}
+local MainFrame = Instance.new("Frame")
+MainFrame.Name = "MainFrame"
+MainFrame.Size = UDim2.new(0, 320, 0, 170)
+MainFrame.Position = UDim2.new(0.5, -160, 0.5, -85)
+MainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
+MainFrame.BorderSizePixel = 0
+MainFrame.Active = true
+MainFrame.Draggable = true
+MainFrame.Parent = LangGui
 
-local function replaceAll(str, findStr, replaceStr)
-    local startIdx, endIdx = str:find(findStr, 1, true)
-    while startIdx do
-        str = str:sub(1, startIdx - 1) .. replaceStr .. str:sub(endIdx + 1)
-        startIdx, endIdx = str:find(findStr, startIdx + #replaceStr, true)
-    end
-    return str
+local Corner = Instance.new("UICorner")
+Corner.CornerRadius = UDim.new(0, 10)
+Corner.Parent = MainFrame
+
+local Stroke = Instance.new("UIStroke")
+Stroke.Color = Color3.fromRGB(255, 120, 30)
+Stroke.Thickness = 2
+Stroke.Parent = MainFrame
+
+local Title = Instance.new("TextLabel")
+Title.Size = UDim2.new(1, 0, 0, 45)
+Title.Position = UDim2.new(0, 0, 0, 10)
+Title.BackgroundTransparency = 1
+Title.Text = "BIGFROOT SCRIPT\nChọn ngôn ngữ / Select Language"
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.TextSize = 15
+Title.Font = Enum.Font.SourceSansBold
+Title.Parent = MainFrame
+
+local BtnVN = Instance.new("TextButton")
+BtnVN.Size = UDim2.new(0, 130, 0, 45)
+BtnVN.Position = UDim2.new(0, 20, 0, 95)
+BtnVN.BackgroundColor3 = Color3.fromRGB(230, 50, 50)
+BtnVN.Text = "Tiếng Việt 🇻🇳"
+BtnVN.TextColor3 = Color3.fromRGB(255, 255, 255)
+BtnVN.TextSize = 16
+BtnVN.Font = Enum.Font.SourceSansBold
+BtnVN.Parent = MainFrame
+
+local BtnVNCorner = Instance.new("UICorner")
+BtnVNCorner.CornerRadius = UDim.new(0, 8)
+BtnVNCorner.Parent = BtnVN
+
+local BtnEN = Instance.new("TextButton")
+BtnEN.Size = UDim2.new(0, 130, 0, 45)
+BtnEN.Position = UDim2.new(1, -150, 0, 95)
+BtnEN.BackgroundColor3 = Color3.fromRGB(40, 120, 220)
+BtnEN.Text = "English 🇬🇧"
+BtnEN.TextColor3 = Color3.fromRGB(255, 255, 255)
+BtnEN.TextSize = 16
+BtnEN.Font = Enum.Font.SourceSansBold
+BtnEN.Parent = MainFrame
+
+local BtnENCorner = Instance.new("UICorner")
+BtnENCorner.CornerRadius = UDim.new(0, 8)
+BtnENCorner.Parent = BtnEN
+
+-- ====================================================================
+-- TẢI SCRIPT TIẾNG ANH (GỐC)
+-- ====================================================================
+local function loadEnglish()
+    LangGui:Destroy()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/hanniii1/Loader/refs/heads/main/BFLoader.lua"))()
 end
 
-local EXACT_MATCH_VI = {
-    ["Auto Steel Eggs"] = "Tự Động Trộm Trứng",
-    ["Eggs"] = "Trứng",
-    ["Progression"] = "Tiến Trình",
-    ["Pets"] = "Thú Cưng",
-    ["Events"] = "Sự Kiện",
-    ["Contest"] = "Cuộc Thi",
-    ["Fuse"] = "Dung Hợp",
-    ["Visual"] = "Giao Diện & ESP",
-    ["Settings"] = "Cài Đặt",
-
-    -- [ TAB AUTO STEEL EGGS ]
-    ["Auto Capture Egg"] = "Tự Động Bắt Trứng",
-    ["Capture Range (studs)"] = "Tầm Bắt Trứng (studs)",
-    ["Captain Egg"] = "Trứng Đội Trưởng",
-    ["Avoid Baps"] = "Tránh Bẫy Baps",
-    ["Avoid Traps"] = "Tránh Bẫy",
-    ["Rarity"] = "Độ Hiếm",
-    ["Return to Plot"] = "Trở Về Khu Đất",
-    ["Plot Spawn"] = "Vị Trí Xuất Hiện Tại Đất",
-    ["Return to Last Position"] = "Trở Lại Vị Trí Cũ",
-    ["Anti AFK"] = "Chống Văng AFK",
-    ["Auto Execute"] = "Tự Chạy Script Khi Vào Game",
-    ["Auto Reconnect"] = "Tự Kết Nối Lại",
-    ["OP Stuffs"] = "Tính Năng Nâng Cao (OP)",
-    ["God Mode"] = "Chế Độ Bất Tử",
-    ["Instant Steal"] = "Trộm Tức Thì",
-    ["Glide Speed"] = "Tốc Độ Bay / Trượt",
-    ["Anti Treadmill"] = "Chống Đẩy Lùi Máy Chạy",
-    ["Auto Steal Filter"] = "Bộ Lọc Tự Trộm Trứng",
-    ["Cherry Blossom"] = "Hoa Anh Đào",
-    ["Cosmic"] = "Vũ Trụ",
-    ["Dark Light"] = "Ánh Sáng Tối",
-    ["Titan Temple"] = "Đền Titan",
-    ["Eternal"] = "Vĩnh Hằng",
-    ["Divine"] = "Thần Thánh",
-    ["Secret"] = "Bí Mật",
-    ["Mutations"] = "Đột Biến",
-    ["Match ALL Selected Mutations"] = "Khớp Tất Cả Đột Biến Chọn",
-    ["Only Mutated Eggs"] = "Chỉ Lấy Trứng Đột Biến",
-    ["Min KG"] = "Số KG Tối Thiểu",
-    ["Big KG"] = "Trứng KG Lớn",
-    ["Always Steal Dragon Eggs"] = "Luôn Trộm Trứng Rồng",
-    ["Skip Contested Eggs"] = "Bỏ Qua Trứng Tranh Chấp",
-
-    -- [ TAB EGGS ]
-    ["Egg Automation"] = "Tự Động Hóa Trứng",
-    ["Auto Place Selected"] = "Tự Đặt Trứng Đã Chọn",
-    ["Auto Place All"] = "Tự Đặt Tất Cả Trứng",
-    ["Auto Hatch Ready"] = "Tự Ấp Trứng Đã Sẵn Sàng",
-    ["Use Filter for Auto Hatch Ready"] = "Dùng Bộ Lọc Khi Ấp Trứng",
-    ["Hatch"] = "Ấp Trứng",
-    ["Place Thresholds"] = "Ngưỡng Đặt Trứng",
-    ["Place Only Above KG"] = "Chỉ Đặt Trứng Trên KG",
-    ["Place Only Below KG"] = "Chỉ Đặt Trứng Dưới KG",
-    ["Ignore these."] = "Bỏ Qua Mục Này.",
-    ["Auto Sell Eggs"] = "Tự Động Bán Trứng",
-    ["Auto Sell Selected"] = "Tự Bán Trứng Đã Chọn",
-    ["Sell Eggs Below KG"] = "Bán Trứng Dưới KG",
-
-    -- [ TAB PROGRESSION ]
-    ["Upgrades"] = "Nâng Cấp",
-    ["Auto Upgrade Pen"] = "Tự Nâng Cấp Chuồng",
-    ["Auto Treadmill Training"] = "Tự Tập Máy Chạy Bộ",
-    ["Auto Admin Treadmill"] = "Tự Tập Máy Chạy Admin",
-    ["Auto Treadmill Upgrade"] = "Tự Nâng Cấp Máy Chạy Bộ",
-    ["Trails To Buy"] = "Vệt Di Chuyển Cần Mua",
-    ["Auto Buy Selected Trails"] = "Tự Mua Vệt Đã Chọn",
-    ["Auto Buy All Cash Trails"] = "Tự Mua Tất Cả Vệt Bằng Tiền",
-    ["Auto Equip Best Trail"] = "Tự Đeo Vệt Tốt Nhất",
-    ["Gear & Rewards"] = "Trang Bị & Phần Thưởng",
-    ["Auto Equip Best Gear"] = "Tự Đeo Đồ Tốt Nhất",
-    ["Auto Claim Index Rewards"] = "Tự Nhận Thưởng Index",
-    ["Auto Claim Group Reward"] = "Tự Nhận Thưởng Nhóm",
-
-    -- [ TAB PETS ]
-    ["Claim Offline Earnings"] = "Nhận Thu Nhập Offline",
-    ["Auto Sell Pets"] = "Tự Động Bán Thú Cưng",
-    ["Auto Sell Selected"] = "Tự Bán Pet Đã Chọn",
-    ["Auto Sell All Eligible"] = "Tự Bán Tất Cả Pet Đủ Điều Kiện",
-    ["Auto Unequip for Selling"] = "Tự Tháo Pet Để Bán",
-    ["Keep Best (never sell)"] = "Giữ Lại Pet Tốt Nhất",
-    ["Sell Delay (per seat)"] = "Thời Gian Trễ Khi Bán",
-
-    -- [ TAB EVENTS ]
-    ["Enchanted"] = "Mê Hoặc",
-    ["Scramble"] = "Tranh giành",
-    ["Wisp"] = "Linh Hồn Wisp",
-    ["Auto Wisp Quests"] = "Tự Làm Nhiệm Vụ Wisp",
-    ["Steal Wisp Eggs"] = "Trộm Trứng Wisp",
-    ["Butterflies"] = "Bướm",
-    ["Auto Catch Butterflies"] = "Tự Động Bắt Bướm",
-    ["Auto Essence"] = "Tự Động Thu Tinh Chất",
-    ["Auto Trade Up"] = "Tự Đổi / Nâng Cấp Tinh Chất",
-    ["Banjo Cricket"] = "Dế Banjo",
-    ["Auto Banjo Cricket"] = "Tự Động Sự Kiện Dế Banjo",
-    ["Dr. Scramble"] = "Tiến Sĩ Scramble",
-    ["Auto Collect"] = "Tự Động Gom Nhặt",
-    ["Rarest Drones First"] = "Ưu Tiên Drone Hiếm Nhất",
-    ["Auto Quest"] = "Tự Động Làm Nhiệm Vụ",
-    ["Dr. Scramble Boss"] = "Boss Tiến Sĩ Scramble",
-    ["Auto Fight Boss"] = "Tự Đánh Boss",
-    ["Auto Claim Mastery"] = "Tự Nhận Điểm Thông Thạo",
-    ["Auto Steel Recipe Eggs"] = "Tự Trộm Trứng Công Thức",
-    ["Stock Up Isperes"] = "Tích Trữ Isperes",
-    ["Mutation Shards"] = "Mảnh Đột Biến",
-    ["Auto Mutation Shards"] = "Tự Thu Mảnh Đột Biến",
-
-    -- [ TAB CONTEST ]
-    ["Contest Players"] = "Người Chơi Trong Cuộc Thi",
-    ["Bat Aura"] = "Hào Quang Đánh Gậy Tự Động",
-    ["Auto Equip Best Bat"] = "Tự Đeo Gậy Mạnh Nhất",
-    ["Forward Offset (studs)"] = "Khoảng Bù Phía Trước",
-    ["Give Up After (seconds)"] = "Bỏ Cuộc Sau (giây)",
-
-    -- [ TAB FUSE ]
-    ["Fuse Predictor"] = "Dự Đoán Kết Quả Dung Hợp",
-    ["Auto Fuse Selected"] = "Tự Dung Hợp Pet Đã Chọn",
-    ["Auto Fuse All Eligible"] = "Tự Dung Hợp Pet Đủ Điều Kiện",
-    ["Only Fuse Pets Below 5/6"] = "Chỉ Dung Hợp Pet Dưới 5/6",
-    ["Shrine Fusion"] = "Dung Hợp Đền Thờ",
-    ["Auto Shrine Fusion"] = "Tự Dung Hợp Đền Thờ",
-
-    -- [ TAB VISUAL ]
-    ["Performance"] = "Hiệu Năng",
-    ["Ultra RPG Boost"] = "Tối Ưu Hóa FPS Cực Cao",
-    ["Delete Pets (FPS BOOST)"] = "Ẩn/Xóa Pet (Tăng FPS)",
-    ["Inventory Value"] = "Giá Trị Kho Đồ",
-    ["Inventory Value ESP"] = "Hiện Giá Trị Kho Đồ",
-    ["Egg ESP"] = "Hiện Vị Trí Trứng",
-    ["Egg ESP Filter"] = "Bộ Lọc Hiện Trứng",
-    ["Max Distance (studs)"] = "Khoảng Cách Tối Đa",
-
-    -- [ TAB SETTINGS ]
-    ["Configs"] = "Cấu Hình",
-    ["Create"] = "Tạo Mới",
-    ["Save"] = "Lưu",
-    ["Delete"] = "Xóa",
-    ["Clear auto-load"] = "Xóa Tự Tải Cấu Hình",
-    ["Autoload mode"] = "Chế Độ Tự Tải",
-    ["Autosave loaded config"] = "Tự Lưu Cấu Hình Đang Dùng",
-    ["Copy code"] = "Sao Chép Mã",
-    ["Import code"] = "Nhập Mã",
-    ["Toggle menu"] = "Bật/Tắt Menu",
-    ["Auto Hide UI after execute"] = "Tự Ẩn UI Sau Khi Chạy",
-    ["Watermark"] = "Logo Chìm",
-    ["Mobile toggle button"] = "Nút Bật/Tắt Trên Mobile",
-    ["Dim background"] = "Làm Tối Nền",
-    ["Weather"] = "Thời Tiết",
-    ["Weather area"] = "Khu Vực Thời Tiết",
-    ["Inside UI"] = "Bên Trong UI",
-    ["Weather size"] = "Kích Thước Thời Tiết",
-    ["Draggable cards"] = "Thẻ Kéo Di Chuyển",
-    ["Collapse sidebar"] = "Thu Gọn Thanh Bên",
-    ["Reset card layout"] = "Đặt Lại Bố Cục Thẻ",
-    ["Auto scale to screen"] = "Tự Tỷ Lệ Màn Hình",
-    ["Font"] = "Phông Chữ",
-    ["Unload"] = "Tắt Script",
-    ["Theme"] = "Giao Diện"
-}
-
-local DYNAMIC_PATTERNS = {
-    {
-        pattern = "ALL (%d+)",
-        format = function(lang, c) return lang == "VI" and ("TẤT CẢ " .. c) or ("ALL " .. c) end
-    },
-    {
-        pattern = "READY (%d+)",
-        format = function(lang, c) return lang == "VI" and ("SẴN SÀNG " .. c) or ("READY " .. c) end
-    },
-    {
-        pattern = "GROWING (%d+)",
-        format = function(lang, c) return lang == "VI" and ("ĐANG LỚN " .. c) or ("GROWING " .. c) end
-    },
-    {
-        pattern = "IN BAG (%d+)",
-        format = function(lang, c) return lang == "VI" and ("TRONG TÚI " .. c) or ("IN BAG " .. c) end
-    },
-    {
-        pattern = "#(%d+) of (%d+) eggs by value",
-        format = function(lang, r, total) return lang == "VI" and string.format("Hạng #%s/%s trứng theo giá trị", r, total) or string.format("#%s of %s eggs by value", r, total) end
-    },
-    {
-        pattern = "1 in ([%d%.]+)",
-        format = function(lang, val) return lang == "VI" and ("Tỉ lệ 1/" .. val) or ("1 in " .. val) end
-    },
-    {
-        pattern = "Ends in (%d+h %d+m %d+s)",
-        format = function(lang, tStr) return lang == "VI" and ("Kết thúc sau " .. tStr) or ("Ends in " .. tStr) end
-    },
-    {
-        pattern = "in (%d+h %d+m)",
-        format = function(lang, tStr) return lang == "VI" and ("sau " .. tStr) or ("in " .. tStr) end
-    },
-    {
-        pattern = "Banner chance (%d+%.?%d*%%)",
-        format = function(lang, cStr) return lang == "VI" and ("Tỉ lệ Banner " .. cStr) or ("Banner chance " .. cStr) end
-    },
-    {
-        pattern = "Pity (%d+)/(%d+)",
-        format = function(lang, p1, p2) return lang == "VI" and string.format("Bảo hiểm %s/%s", p1, p2) or string.format("Pity %s/%s", p1, p2) end
-    },
-    {
-        pattern = "Free rerolls (%d+)",
-        format = function(lang, rStr) return lang == "VI" and ("Đổi miễn phí " .. rStr) or ("Free rerolls " .. rStr) end
-    },
-    {
-        pattern = "rotates in (%d+:%d+)",
-        format = function(lang, timeStr) return lang == "VI" and ("xoay vòng sau " .. timeStr) or ("rotates in " .. timeStr) end
-    },
-    {
-        pattern = "Eggs placed (%d+)/(%d+) %- (%d+)/(%d+) pets equipped, (%d+) in bag",
-        format = function(lang, p1, p2, p3, p4, p5)
-            if lang == "VI" then
-                return string.format("Trứng đã đặt %s/%s - %s/%s pet trang bị, %s trong túi", p1, p2, p3, p4, p5)
-            end
-            return string.format("Eggs placed %s/%s - %s/%s pets equipped, %s in bag", p1, p2, p3, p4, p5)
-        end
-    },
-    {
-        pattern = "Pet matches %- (%d+) pets? for %$(.+)",
-        format = function(lang, count, val)
-            if lang == "VI" then return string.format("Khớp pet - %s pet giá $%s", count, val) end
-            return string.format("Pet matches - %s pets for $%s", count, val)
-        end
-    },
-    {
-        pattern = "Egg matches %- (%d+) eggs? for %$(.+)",
-        format = function(lang, count, val)
-            if lang == "VI" then return string.format("Khớp trứng - %s trứng giá $%s", count, val) end
-            return string.format("Egg matches - %s eggs for $%s", count, val)
-        end
-    },
-    {
-        pattern = "Lab egg matches %- (%d+) eggs? for %$(.+)",
-        format = function(lang, count, val)
-            if lang == "VI" then return string.format("Khớp trứng Lab - %s trứng giá $%s", count, val) end
-            return string.format("Lab egg matches - %s eggs for $%s", count, val)
-        end
-    },
-    {
-        pattern = "Favorite matches %- (%d+) pets?, (%d+) to mark %| (%d+) favorited",
-        format = function(lang, c1, c2, c3)
-            if lang == "VI" then return string.format("Khớp yêu thích - %s pet, %s cần lưu | %s đã khóa", c1, c2, c3) end
-            return string.format("Favorite matches - %s pets, %s to mark | %s favorited", c1, c2, c3)
-        end
-    },
-    {
-        pattern = "Charges (%d+) Eggs (%d+)/(%d+) Tries (%d+) Applied (%d+)",
-        format = function(lang, c, e1, e2, t, a)
-            if lang == "VI" then return string.format("Số lần sạc %s Trứng %s/%s Thử %s Đã dùng %s", c, e1, e2, t, a) end
-            return string.format("Charges %s Eggs %s/%s Tries %s Applied %s", c, e1, e2, t, a)
-        end
-    },
-    {
-        pattern = "Players (%d+)/(%d+)",
-        format = function(lang, p1, p2) return lang == "VI" and string.format("Người chơi %s/%s", p1, p2) or string.format("Players %s/%s", p1, p2) end
-    },
-    {
-        pattern = "Next Mech portal in (%d+:%d+)",
-        format = function(lang, timeStr) return lang == "VI" and ("Cổng Robot mở sau " .. timeStr) or ("Next Mech portal in " .. timeStr) end
-    },
-    {
-        pattern = "Next Butterfly Bloom in (%d+:%d+)",
-        format = function(lang, timeStr) return lang == "VI" and ("Sự kiện Bướm nở sau " .. timeStr) or ("Next Butterfly Bloom in " .. timeStr) end
-    },
-    {
-        pattern = "Butterfly Bloom live, (%d+:%d+) left",
-        format = function(lang, timeStr) return lang == "VI" and ("Sự kiện Bướm đang diễn ra, còn " .. timeStr) or ("Butterfly Bloom live, " .. timeStr .. " left") end
-    },
-    {
-        pattern = "Caught (.+)! %((%d+) owned%)",
-        format = function(lang, name, count) return lang == "VI" and string.format("Đã bắt %s! (Đang có %s con)", name, count) or string.format("Caught %s! (%s owned)", name, count) end
-    }
-}
-
-local SortedVI = {}
-for en, vi in pairs(MAP_VI) do table.insert(SortedVI, {en = en, out = vi, len = #en}) end
-table.sort(SortedVI, function(a, b) return a.len > b.len end)
-
--- ==================== 3. LÕI DỊCH THUẬT SIÊU TỐC O(1) ====================
-local function translateText(raw)
-    local cacheKey = currentLanguage .. "|" .. raw
-    if FastCache[cacheKey] then return FastCache[cacheKey] end
-
-    if currentLanguage == "EN" then
-        local res = replaceAll(raw, "Chilli Hub", "Chilli Hub V2")
-        FastCache[cacheKey] = res
-        return res
-    end
-
-    local trimmed = raw:match("^%s*(.-)%s*$") or raw
-
-    if EXACT_MATCH_VI[trimmed] then
-        local res = raw:gsub(trimmed, EXACT_MATCH_VI[trimmed], 1)
-        FastCache[cacheKey] = res
-        return res
-    end
-
-    local result = raw
-    local matched = false
-
-    for _, item in ipairs(DYNAMIC_PATTERNS) do
-        if result:find(item.pattern) then
-            result = result:gsub(item.pattern, function(...)
-                return item.format(currentLanguage, ...)
-            end)
-            matched = true
-        end
-    end
-
-    for _, item in ipairs(SortedVI) do
-        if result:find(item.en, 1, true) then
-            result = replaceAll(result, item.en, item.out)
-            matched = true
-        end
-    end
-
-    FastCache[cacheKey] = matched and result or raw
-    return FastCache[cacheKey]
-end
-
-local TrackedElements = {}
-
-local function applyTranslation(inst)
-    if not (inst:IsA("TextLabel") or inst:IsA("TextButton") or inst:IsA("TextBox")) then return end
-    if inst:FindFirstAncestor("Chilli_Liquid_Capsule") then return end
-    if inst:GetAttribute("__IsTranslating") then return end
-
-    local original = inst:GetAttribute("OriginalRawText")
-    if not original then
-        original = inst.Text
-        inst:SetAttribute("OriginalRawText", original)
-    end
-
-    local mappedText = translateText(original)
-    if inst.Text ~= mappedText then
-        inst:SetAttribute("__IsTranslating", true)
-        inst:SetAttribute("__LastTranslatedText", mappedText)
-        pcall(function() inst.Text = mappedText end)
-        inst:SetAttribute("__IsTranslating", false)
-    end
-end
-
-local function hookElement(inst)
-    if not (inst:IsA("TextLabel") or inst:IsA("TextButton") or inst:IsA("TextBox")) then return end
-    if inst:GetAttribute("HasTranslateHook") then return end
-    inst:SetAttribute("HasTranslateHook", true)
-
-    table.insert(TrackedElements, inst)
-    task.defer(function() applyTranslation(inst) end)
-
-    inst:GetPropertyChangedSignal("Text"):Connect(function()
-        if inst:GetAttribute("__IsTranslating") then return end
-        local current = inst.Text
-        if current == inst:GetAttribute("__LastTranslatedText") then return end
-        inst:SetAttribute("OriginalRawText", current)
-        applyTranslation(inst)
-    end)
-end
-
-local function updateAllActive()
-    for i = #TrackedElements, 1, -1 do
-        local el = TrackedElements[i]
-        if el and el.Parent then
-            applyTranslation(el)
-        else
-            table.remove(TrackedElements, i)
-        end
-    end
-end
-
--- ==================== 4. LÕI CÔ LẬP ĐỔI MÀU ĐÚNG 3 PHẦN (SOFT PASTEL BLUE) ====================
--- Bảng màu Soft Pastel Sky Blue (Dịu mắt, không đậm, không chói)
-local COLOR_FACE_TOP    = Color3.fromRGB(140, 195, 245) -- Xanh nhạt sáng dịu
-local COLOR_FACE_BOTTOM = Color3.fromRGB(95, 155, 225)  -- Xanh biển nhạt
-local COLOR_BEVEL_SHADOW= Color3.fromRGB(55, 110, 180)  -- Bóng đổ chân nút 3D
-
--- DANH SÁCH TỪ KHÓA CHỈ ĐỊNH CỦA ĐÚNG 2 HÀNG NÚT (ẢNH 1 & ẢNH 2)
-local TARGET_BUTTON_KEYWORDS = {
-    -- Hàng nút Tab bên trái (Ảnh 2)
-    ["cày cuốc"] = true, ["farm"] = true,
-    ["người chơi"] = true, ["player"] = true,
-    ["dự đoán"] = true, ["predictor"] = true,
-    ["tiến trình"] = true, ["progress"] = true,
-    ["máy chủ"] = true, ["server"] = true,
-    ["khác"] = true, ["misc"] = true,
-    ["tự đổi máy chủ"] = true, ["tự đổi server"] = true, ["auto hop"] = true,
-    -- Hàng nút điều hướng bên phải (Ảnh 1)
-    ["discord"] = true,
-    ["phím tắt & key"] = true, ["quick & keys"] = true,
-    ["cài đặt"] = true, ["settings"] = true,
-    ["cấu hình"] = true, ["config"] = true
-}
-
--- Hàm áp màu xanh nhạt lên duy nhất một nút cụ thể
-local function recolorSingleButton(btnContainer, labelObj)
-    if not btnContainer then return end
+-- ====================================================================
+-- TẢI SCRIPT TIẾNG VIỆT
+-- ====================================================================
+local function loadVietnamese()
+    LangGui:Destroy()
     
-    -- 1. Đổi UIGradient bề mặt nếu có
-    local grad = btnContainer:FindFirstChildOfClass("UIGradient")
-    if not grad then
-        grad = Instance.new("UIGradient")
-        grad.Rotation = 90
-        grad.Parent = btnContainer
-    end
-    grad.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, COLOR_FACE_TOP),
-        ColorSequenceKeypoint.new(1, COLOR_FACE_BOTTOM)
-    })
-
-    btnContainer.BackgroundColor3 = COLOR_FACE_BOTTOM
-
-    -- 2. Đổi chân bóng 3D (Frame viền chân nếu có)
-    if btnContainer.Parent and btnContainer.Parent:IsA("Frame") and btnContainer.Parent ~= btnContainer then
-        local p = btnContainer.Parent
-        local pCol = p.BackgroundColor3
-        if pCol and (pCol.R > 0.4 and pCol.G < 0.35) then
-            p.BackgroundColor3 = COLOR_BEVEL_SHADOW
-        end
-    end
-
-    -- 3. KHÓA CỨNG MÀU CHỮ: Luôn luôn giữ màu TRẮNG tinh
-    if labelObj and labelObj:IsA("TextLabel") or labelObj:IsA("TextButton") then
-        labelObj.TextColor3 = Color3.fromRGB(255, 255, 255)
-    end
-end
-
--- Hàm áp màu xanh nhạt lên Thanh Header TopBar (Ảnh 3)
-local function recolorHeaderBar(headerFrame, titleObj)
-    if not headerFrame then return end
-
-    local grad = headerFrame:FindFirstChildOfClass("UIGradient")
-    if not grad then
-        grad = Instance.new("UIGradient")
-        grad.Rotation = 90
-        grad.Parent = headerFrame
-    end
-    grad.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, COLOR_FACE_TOP),
-        ColorSequenceKeypoint.new(1, COLOR_FACE_BOTTOM)
-    })
-
-    headerFrame.BackgroundColor3 = COLOR_FACE_BOTTOM
-
-    -- Chân bóng viền dưới header (nếu có frame shadow)
-    if headerFrame.Parent and headerFrame.Parent:IsA("Frame") then
-        local p = headerFrame.Parent
-        if p.BackgroundColor3.R > 0.4 and p.BackgroundColor3.G < 0.35 then
-            p.BackgroundColor3 = COLOR_BEVEL_SHADOW
-        end
-    end
-
-    -- Khóa cứng chữ tiêu đề màu trắng
-    if titleObj and (titleObj:IsA("TextLabel") or titleObj:IsA("TextButton")) then
-        titleObj.TextColor3 = Color3.fromRGB(255, 255, 255)
-    end
-
-    -- Đổi nút tắt [X] sang màu xanh pastel đồng bộ
-    for _, item in ipairs(headerFrame:GetDescendants()) do
-        if item:IsA("TextButton") or item:IsA("ImageButton") then
-            item.BackgroundColor3 = COLOR_FACE_BOTTOM
-            local xGrad = item:FindFirstChildOfClass("UIGradient")
-            if xGrad then
-                xGrad.Color = ColorSequence.new({
-                    ColorSequenceKeypoint.new(0, COLOR_FACE_TOP),
-                    ColorSequenceKeypoint.new(1, COLOR_FACE_BOTTOM)
-                })
-            end
-            if item:IsA("TextButton") then
-                item.TextColor3 = Color3.fromRGB(255, 255, 255)
-            end
-        end
-    end
-end
-
--- Bộ kiểm soát chỉ định (Chỉ duyệt đúng 3 đối tượng, tuyệt đối không duyệt lan man)
-local function inspectAndApplySoftBlue(inst)
-    if not (inst:IsA("TextLabel") or inst:IsA("TextButton")) then return end
-    if inst:FindFirstAncestor("Chilli_Liquid_Capsule") then return end
-
-    local textRaw = inst.Text:lower():match("^%s*(.-)%s*$") or ""
-
-    -- 1. Nhận diện Thanh Header (Ảnh 3)
-    if textRaw:find("chilli hub") then
-        local headerFrame = inst:FindFirstAncestorOfClass("Frame")
-        if headerFrame then
-            recolorHeaderBar(headerFrame, inst)
-        end
-        return
-    end
-
-    -- 2. Nhận diện Đúng 2 hàng nút Tab trái & phải (Ảnh 1 & Ảnh 2)
-    if TARGET_BUTTON_KEYWORDS[textRaw] then
-        -- Tìm Container của nút bấm
-        local btnTarget = inst:IsA("TextButton") and inst or inst:FindFirstAncestorOfClass("TextButton") or inst:FindFirstAncestorOfClass("Frame")
-        if btnTarget then
-            recolorSingleButton(btnTarget, inst)
-        end
-        return
-    end
-end
-
--- ==================== 5. NÚT ĐỔI NGÔN NGỮ LIQUID CYBER (SOFT BLUE THEME) ====================
-local function createLiquidCapsuleUI()
-    local parentTarget = (gethui and gethui()) or CoreGui or LocalPlayer:WaitForChild("PlayerGui")
-    local old = parentTarget:FindFirstChild("Chilli_Liquid_Capsule")
-    if old then old:Destroy() end
-
-    local ScreenGui = Instance.new("ScreenGui")
-    ScreenGui.Name = "Chilli_Liquid_Capsule"
-    ScreenGui.ResetOnSpawn = false
-    ScreenGui.IgnoreGuiInset = true
-    ScreenGui.DisplayOrder = 2147483647
-    ScreenGui.Parent = parentTarget
-
-    -- Vỏ Viên Nang
-    local Capsule = Instance.new("Frame")
-    Capsule.Name = "Capsule"
-    Capsule.Size = UDim2.new(0, 176, 0, 36)
-    Capsule.AnchorPoint = Vector2.new(0.5, 0)
-    Capsule.Position = UDim2.new(0.5, 0, 0, 12)
-    Capsule.BackgroundColor3 = Color3.fromRGB(12, 16, 24)
-    Capsule.BackgroundTransparency = 0.15
-    Capsule.BorderSizePixel = 0
-    Capsule.Parent = ScreenGui
-
-    local CapsuleCorner = Instance.new("UICorner")
-    CapsuleCorner.CornerRadius = UDim.new(1, 0)
-    CapsuleCorner.Parent = Capsule
-
-    local CapsuleStroke = Instance.new("UIStroke")
-    CapsuleStroke.Thickness = 1.4
-    CapsuleStroke.Color = COLOR_FACE_TOP
-    CapsuleStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-    CapsuleStroke.Parent = Capsule
-
-    -- Con trượt Active Slider (Soft Sky Blue)
-    local Slider = Instance.new("Frame")
-    Slider.Name = "Slider"
-    Slider.Size = UDim2.new(0, 84, 0, 28)
-    Slider.Position = UDim2.new(0, 4, 0.5, -14)
-    Slider.BackgroundColor3 = COLOR_FACE_BOTTOM
-    Slider.BorderSizePixel = 0
-    Slider.Parent = Capsule
-
-    local SliderCorner = Instance.new("UICorner")
-    SliderCorner.CornerRadius = UDim.new(1, 0)
-    SliderCorner.Parent = Slider
-
-    local SliderGradient = Instance.new("UIGradient")
-    SliderGradient.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, COLOR_FACE_TOP),
-        ColorSequenceKeypoint.new(1, COLOR_FACE_BOTTOM)
-    })
-    SliderGradient.Rotation = 90
-    SliderGradient.Parent = Slider
-
-    local SliderGlow = Instance.new("UIStroke")
-    SliderGlow.Thickness = 1
-    SliderGlow.Color = Color3.fromRGB(175, 215, 255)
-    SliderGlow.Transparency = 0.4
-    SliderGlow.Parent = Slider
-
-    -- Nút Tiếng Việt
-    local BtnVI = Instance.new("TextButton")
-    BtnVI.Name = "BtnVI"
-    BtnVI.Size = UDim2.new(0, 84, 1, 0)
-    BtnVI.Position = UDim2.new(0, 4, 0, 0)
-    BtnVI.BackgroundTransparency = 1
-    BtnVI.Text = "🇻🇳 TIẾNG VIỆT"
-    BtnVI.Font = Enum.Font.GothamBold
-    BtnVI.TextSize = 10
-    BtnVI.TextColor3 = Color3.fromRGB(255, 255, 255)
-    BtnVI.ZIndex = 5
-    BtnVI.Parent = Capsule
-
-    -- Nút English
-    local BtnEN = Instance.new("TextButton")
-    BtnEN.Name = "BtnEN"
-    BtnEN.Size = UDim2.new(0, 84, 1, 0)
-    BtnEN.Position = UDim2.new(1, -88, 0, 0)
-    BtnEN.BackgroundTransparency = 1
-    BtnEN.Text = "🌐 ENGLISH"
-    BtnEN.Font = Enum.Font.GothamBold
-    BtnEN.TextSize = 10
-    BtnEN.TextColor3 = Color3.fromRGB(145, 160, 185)
-    BtnEN.ZIndex = 5
-    BtnEN.Parent = Capsule
-
-    local function switchMode(target)
-        if currentLanguage == target then return end
-        currentLanguage = target
-
-        TweenService:Create(Capsule, TweenInfo.new(0.08), {Size = UDim2.new(0, 170, 0, 34)}):Play()
-        task.delay(0.08, function()
-            TweenService:Create(Capsule, TweenInfo.new(0.15, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = UDim2.new(0, 176, 0, 36)}):Play()
-        end)
-
-        if target == "VI" then
-            TweenService:Create(Slider, TweenInfo.new(0.35, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
-                Position = UDim2.new(0, 4, 0.5, -14),
-                BackgroundColor3 = COLOR_FACE_BOTTOM
-            }):Play()
-            TweenService:Create(CapsuleStroke, TweenInfo.new(0.3), {Color = COLOR_FACE_TOP}):Play()
-            TweenService:Create(BtnVI, TweenInfo.new(0.2), {TextColor3 = Color3.fromRGB(255, 255, 255)}):Play()
-            TweenService:Create(BtnEN, TweenInfo.new(0.2), {TextColor3 = Color3.fromRGB(145, 160, 185)}):Play()
-        else
-            TweenService:Create(Slider, TweenInfo.new(0.35, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
-                Position = UDim2.new(1, -88, 0.5, -14),
-                BackgroundColor3 = Color3.fromRGB(55, 70, 95)
-            }):Play()
-            TweenService:Create(CapsuleStroke, TweenInfo.new(0.3), {Color = Color3.fromRGB(90, 120, 165)}):Play()
-            TweenService:Create(BtnEN, TweenInfo.new(0.2), {TextColor3 = Color3.fromRGB(255, 255, 255)}):Play()
-            TweenService:Create(BtnVI, TweenInfo.new(0.2), {TextColor3 = Color3.fromRGB(145, 160, 185)}):Play()
-        end
-
-        updateAllActive()
-    end
-
-    BtnVI.MouseButton1Click:Connect(function() switchMode("VI") end)
-    BtnEN.MouseButton1Click:Connect(function() switchMode("EN") end)
-
-    -- Kéo thả tự do kèm kẹp mép Viewport
-    local dragging, dragStart, startPos = false, nil, nil
-    Capsule.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-            dragging = true
-            dragStart = input.Position
-            startPos = Capsule.Position
-            input.Changed:Connect(function()
-                if input.UserInputState == Enum.UserInputState.End then dragging = false end
-            end)
-        end
-    end)
-
-    Capsule.InputChanged:Connect(function(input)
-        if (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) and dragging then
-            local delta = input.Position - dragStart
-            local cam = workspace.CurrentCamera
-            local maxX = cam and cam.ViewportSize.X - 180 or 800
-            local maxY = cam and cam.ViewportSize.Y - 45 or 600
-
-            local newX = math.clamp(startPos.X.Offset + delta.X, -maxX / 2, maxX / 2)
-            local newY = math.clamp(startPos.Y.Offset + delta.Y, 0, maxY)
-
-            Capsule.Position = UDim2.new(startPos.X.Scale, newX, startPos.Y.Scale, newY)
-        end
-    end)
-end
-
--- ==================== 6. BỘ QUÉT TẢI TRÌ HOÃN (DEFER SCANNER) ====================
-task.delay(2.5, function()
-    createLiquidCapsuleUI()
-
-    local searchRoots = {
-        gethui and gethui(),
-        CoreGui,
-        LocalPlayer:FindFirstChild("PlayerGui")
+    -- Từ điển dịch thuật
+    local Translations = {
+        ["Auto Steel Eggs"] = "Tự Động Trộm Trứng",
+        ["Eggs"] = "Quản Lý Trứng",
+        ["Progression"] = "Tiến Trình Phát Triển",
+        ["Pets"] = "Thú Cưng (Pet)",
+        ["Events"] = "Sự Kiện",
+        ["Contest"] = "Cuộc Thi Đấu",
+        ["Fuse"] = "Dung Hợp Pet",
+        ["Visual"] = "Giao Diện & ESP",
+        ["Settings"] = "Cài Đặt Hệ Thống",
+        ["Auto Capture Egg"] = "Tự Động Bắt Trứng",
+        ["Capture Range (studs)"] = "Phạm Vi Bắt (studs)",
+        ["Captain Egg"] = "Trứng Đội Trưởng",
+        ["Waiting for a contest egg"] = "Đang chờ trứng cuộc thi...",
+        ["Avoid Baps"] = "Tránh Bẫy Baps",
+        ["Avoid Traps"] = "Tránh Các Loại Bẫy",
+        ["Rarity"] = "Độ Hiếm",
+        ["Return to Plot"] = "Trở Về Khu Đất",
+        ["Plot Spawn"] = "Điểm Hồi Sinh Tại Đất",
+        ["Return to Last Position"] = "Trở Lại Vị Trí Cũ",
+        ["Anti AFK"] = "Chống Văng AFK",
+        ["Auto Execute"] = "Tự Chạy Script Khi Vào Game",
+        ["Auto Reconnect"] = "Tự Kết Nối Lại Khi Mất Mạng",
+        ["Status"] = "Trạng Thái",
+        ["Safety"] = "Độ An Toàn",
+        ["Carrying"] = "Đang Cầm",
+        ["Nothing"] = "Không có",
+        ["Last claim"] = "Lần Nhận Cuối",
+        ["Reset Session Counter"] = "Đặt Lại Bộ Đếm Phiên",
+        ["Drop Carried Egg"] = "Thả Trứng Đang Cầm",
+        ["OP Stuffs"] = "Tính Năng Nâng Cao (OP)",
+        ["God Mode"] = "Chế Độ Bất Tử",
+        ["Instant Steal"] = "Trộm Tức Thì",
+        ["Glide Speed"] = "Tốc Độ Bay / Trượt",
+        ["Anti Treadmill"] = "Chống Đẩy Lùi Máy Chạy",
+        ["Auto Steal Filter"] = "Bộ Lọc Trộm Trứng",
+        ["Areas"] = "Khu Vực",
+        ["Categories"] = "Thể Loại",
+        ["Rarities"] = "Độ Hiếm",
+        ["Mutations"] = "Đột Biến",
+        ["Match ALL Selected Mutations"] = "Khớp Tất Cả Đột Biến Chọn",
+        ["Only Mutated Eggs"] = "Chỉ Lấy Trứng Đột Biến",
+        ["Min KG"] = "Số KG Tối Thiểu",
+        ["Big KG (0 = off)"] = "Trứng KG Lớn (0 = Tắt)",
+        ["Always Steal Dragon Eggs"] = "Luôn Trộm Trứng Rồng",
+        ["Big Egg Filter"] = "Bộ Lọc Trứng Lớn",
+        ["Skip Contested Eggs"] = "Bỏ Qua Trứng Đang Tranh Chấp",
+        ["Refresh Lists"] = "Làm Mới Danh Sách",
+        ["Filters"] = "Bộ Lọc",
+        ["Matches"] = "Danh Sách Khớp",
+        ["Best Matches"] = "Khớp Tốt Nhất",
+        ["Cherry Blossom"] = "Hoa Anh Đào",
+        ["Cosmic"] = "Vũ Trụ",
+        ["Dark Light"] = "Ánh Sáng Tối",
+        ["Titan Temple"] = "Đền Titan",
+        ["Prehistoric"] = "Tiền Sử",
+        ["Eternal"] = "Vĩnh Hằng",
+        ["Divine"] = "Thần Thánh",
+        ["Secret"] = "Bí Mật",
+        ["Common"] = "Thường",
+        ["Uncommon"] = "Không Phổ Biến",
+        ["Rare"] = "Hiếm",
+        ["Epic"] = "Sử Thi",
+        ["Legendary"] = "Huyền Thoại",
+        ["Mythic"] = "Thần Thoại",
+        ["Egg Automation"] = "Tự Động Hóa Trứng",
+        ["Auto Place Selected"] = "Tự Đặt Trứng Đã Chọn",
+        ["Auto Place All"] = "Tự Đặt Tất Cả Trứng",
+        ["Auto Hatch Ready"] = "Tự Ấp Trứng Sẵn Sàng",
+        ["Use Filter for Auto Hatch Ready"] = "Sử Dụng Bộ Lọc Khi Ấp Trứng",
+        ["Hatch"] = "Ấp Trứng",
+        ["Place Thresholds"] = "Ngưỡng Đặt Trứng",
+        ["Place Only Above KG"] = "Chỉ Đặt Trứng Trên KG",
+        ["Place Only Below KG"] = "Chỉ Đặt Trứng Dưới KG",
+        ["Use Place Status"] = "Dùng Trạng Thái Đặt Trứng",
+        ["Auto Sell Eggs"] = "Tự Động Bán Trứng",
+        ["Auto Sell Selected"] = "Tự Bán Trứng Đã Chọn",
+        ["Auto Sell All Eligible"] = "Tự Bán Tất Cả Trứng Đủ Điều Kiện",
+        ["Sell Eggs Below KG (0 = off)"] = "Bán Trứng Dưới KG (0 = Tắt)",
+        ["Egg Sell Status"] = "Trạng Thái Bán Trứng",
+        ["Upgrades"] = "Nâng Cấp",
+        ["Pen"] = "Chuồng",
+        ["Auto Upgrade Pen"] = "Tự Nâng Cấp Chuồng",
+        ["Treadmill"] = "Máy Chạy Bộ",
+        ["Auto Treadmill Training"] = "Tự Tập Máy Chạy Bộ",
+        ["Auto Admin Treadmill"] = "Tự Tập Máy Chạy Admin",
+        ["Auto Treadmill Upgrade"] = "Tự Nâng Cấp Máy Chạy Bộ",
+        ["Trails To Buy"] = "Vệt Di Chuyển Cần Mua",
+        ["Auto Buy Selected Trails"] = "Tự Mua Vệt Đã Chọn",
+        ["Auto Buy All Cash Trails"] = "Tự Mua Tất Cả Vệt Bằng Tiền",
+        ["Auto Equip Best Trail"] = "Tự Đeo Vệt Tốt Nhất",
+        ["Gear & Rewards"] = "Trang Bị & Phần Thưởng",
+        ["Auto Equip Best Gear"] = "Tự Đeo Đồ Tốt Nhất",
+        ["Auto Claim Index Rewards"] = "Tự Nhận Thưởng Index",
+        ["Auto Claim Group Reward"] = "Tự Nhận Thưởng Nhóm",
+        ["Income"] = "Thu Nhập",
+        ["Claim Offline Earnings"] = "Nhận Thu Nhập Offline",
+        ["Top 10 Eggs"] = "Top 10 Loại Trứng",
+        ["Sell"] = "Bán Pet",
+        ["Sell Categories"] = "Thể Loại Bán",
+        ["Sell Rarities"] = "Độ Hiếm Bán",
+        ["Sell Mutations"] = "Đột Biến Bán",
+        ["Auto Unequip for Selling"] = "Tự Tháo Pet Để Bán",
+        ["Keep Best (never sell)"] = "Giữ Lại Pet Tốt Nhất (Không Bán)",
+        ["Sell Delay (per seat)"] = "Độ Trễ Bán (Mỗi Ghế)",
+        ["Enchanted"] = "Mê Hoặc",
+        ["Scramble"] = "Tranh Giành",
+        ["Wisp"] = "Linh Hồn Wisp",
+        ["Auto Wisp Quests"] = "Tự Làm Nhiệm Vụ Wisp",
+        ["Steal Wisp Eggs"] = "Trộm Trứng Wisp",
+        ["Butterflies"] = "Bướm",
+        ["Auto Catch Butterflies"] = "Tự Động Bắt Bướm",
+        ["Auto Essence"] = "Tự Thu Tinh Chất",
+        ["Auto Trade Up"] = "Tự Nâng Cấp Tinh Chất",
+        ["Banjo Cricket"] = "Dế Banjo",
+        ["Auto Banjo Cricket"] = "Tự Động Sự Kiện Dế Banjo",
+        ["Dr. Scramble"] = "Tiến Sĩ Scramble",
+        ["Auto Collect"] = "Tự Động Gom Nhặt",
+        ["Rarest Drones First"] = "Ưu Tiên Drone Hiếm Nhất",
+        ["Auto Quest"] = "Tự Động Làm Nhiệm Vụ",
+        ["Dr. Scramble Boss"] = "Boss Tiến Sĩ Scramble",
+        ["Auto Fight Boss"] = "Tự Đánh Boss",
+        ["Auto Claim Mastery"] = "Tự Nhận Điểm Thông Thạo",
+        ["Auto Steel Recipe Eggs"] = "Tự Trộm Trứng Công Thức",
+        ["Stock Up Isperes"] = "Tích Trữ Isperes",
+        ["Mutation Shards"] = "Mảnh Đột Biến",
+        ["Auto Mutation Shards"] = "Tự Thu Mảnh Đột Biến",
+        ["Contest Players"] = "Người Chơi Trong Cuộc Thi",
+        ["Bat Aura"] = "Hào Quang Đánh Gậy Tự Động",
+        ["Auto Equip Best Bat"] = "Tự Đeo Gậy Mạnh Nhất",
+        ["Forward Offset (studs)"] = "Khoảng Bù Phía Trước (studs)",
+        ["Give Up After (seconds)"] = "Tự Bỏ Cuộc Sau (Giây)",
+        ["Fuse Predictor"] = "Dự Đoán Kết Quả Dung Hợp",
+        ["Auto Fuse Selected"] = "Tự Dung Hợp Pet Đã Chọn",
+        ["Auto Fuse All Eligible"] = "Tự Dung Hợp Pet Đủ Điều Kiện",
+        ["Shrine Fusion"] = "Dung Hợp Đền Thờ",
+        ["Auto Shrine Fusion"] = "Tự Dung Hợp Tại Đền Thờ",
+        ["Performance"] = "Hiệu Năng Tối Ưu",
+        ["Ultra RPG Boost"] = "Tối Ưu FPS Cực Cao",
+        ["Delete Pets (FPS BOOST)"] = "Ẩn/Xóa Pet (Tăng FPS)",
+        ["Inventory Value"] = "Giá Trị Kho Đồ",
+        ["Inventory Value ESP"] = "Hiện Giá Trị Kho Đồ",
+        ["Egg ESP"] = "Hiện Vị Trí Trứng qua Tường",
+        ["Max Distance (studs)"] = "Khoảng Cách Tối Đa (studs)",
+        ["Egg ESP Filter"] = "Bộ Lọc Hiển Thị Trứng",
+        ["Configs"] = "Cấu Hình Cài Đặt",
+        ["Create"] = "Tạo Mới",
+        ["Save"] = "Lưu Cấu Hình",
+        ["Delete"] = "Xóa Cấu Hình",
+        ["Copy code"] = "Sao Chép Mã",
+        ["Import code"] = "Nhập Mã Cấu Hình",
+        ["Toggle menu"] = "Bật/Tắt Menu",
+        ["Auto Hide UI after execute"] = "Tự Ẩn Giao Diện Sau Khi Chạy",
+        ["Watermark"] = "Logo Chìm",
+        ["Mobile toggle button"] = "Nút Bật/Tắt Trên Điện Thoại",
+        ["Dim background"] = "Làm Tối Màn Hình Nền",
+        ["Font"] = "Phông Chữ",
+        ["Unload"] = "Tắt Script Hoàn Toàn",
+        ["Theme"] = "Giao Diện & Màu Sắc"
     }
 
-    local function scanUIChunked(parent)
-        local children = parent:GetChildren()
-        for i, desc in ipairs(children) do
-            if desc:IsA("TextLabel") or desc:IsA("TextButton") or desc:IsA("TextBox") then
-                hookElement(desc)
-                inspectAndApplySoftBlue(desc)
+    local function translateText(originalText)
+        if not originalText or originalText == "" then return originalText end
+        if Translations[originalText] then return Translations[originalText] end
+        local translated = originalText
+        for eng, vie in pairs(Translations) do
+            if string.find(translated, eng, 1, true) then
+                translated = string.gsub(translated, eng, vie)
             end
-            if i % 30 == 0 then RunService.RenderStepped:Wait() end
-            scanUIChunked(desc)
         end
+        return translated
     end
 
-    for _, root in ipairs(searchRoots) do
-        if root then pcall(function() scanUIChunked(root) end) end
-    end
-
-    for _, root in ipairs(searchRoots) do
-        if root then
-            root.DescendantAdded:Connect(function(desc)
-                task.defer(function()
-                    if desc:IsA("TextLabel") or desc:IsA("TextButton") or desc:IsA("TextBox") then
-                        hookElement(desc)
-                        inspectAndApplySoftBlue(desc)
-                    end
-                end)
+    local function applyTranslation(inst)
+        if inst:IsA("TextLabel") or inst:IsA("TextButton") or inst:IsA("TextBox") then
+            local currentText = inst.Text
+            local newText = translateText(currentText)
+            if newText ~= currentText then inst.Text = newText end
+            inst:GetPropertyChangedSignal("Text"):Connect(function()
+                local textNow = inst.Text
+                local translatedNow = translateText(textNow)
+                if translatedNow ~= textNow then inst.Text = translatedNow end
             end)
         end
     end
-end)
+
+    -- Chạy hook dịch tự động
+    for _, child in ipairs(CoreGui:GetDescendants()) do applyTranslation(child) end
+    if LocalPlayer and LocalPlayer:FindFirstChild("PlayerGui") then
+        for _, child in ipairs(LocalPlayer.PlayerGui:GetDescendants()) do applyTranslation(child) end
+    end
+    CoreGui.DescendantAdded:Connect(applyTranslation)
+    if LocalPlayer and LocalPlayer:FindFirstChild("PlayerGui") then
+        LocalPlayer.PlayerGui.DescendantAdded:Connect(applyTranslation)
+    end
+
+    -- Tải script BigFroot
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/hanniii1/Loader/refs/heads/main/BFLoader.lua"))()
+end
+
+-- Bắt sự kiện bấm nút
+BtnVN.MouseButton1Click:Connect(loadVietnamese)
+BtnEN.MouseButton1Click:Connect(loadEnglish)
