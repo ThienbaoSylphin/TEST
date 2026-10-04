@@ -85,7 +85,7 @@ local function loadVietnamese()
     -- Từ điển dịch thuật
     local Translations = {
         ["Auto Steel Eggs"] = "Tự Động Trộm Trứng",
-        ["Eggs"] = "Quản Lý Trứng",
+        ["Eggs"] = "Trứng",
         ["Progression"] = "Tiến Trình Phát Triển",
         ["Pets"] = "Thú Cưng (Pet)",
         ["Events"] = "Sự Kiện",
