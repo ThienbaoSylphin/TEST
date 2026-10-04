@@ -84,7 +84,7 @@ local function loadVietnamese()
     
     -- Từ điển dịch thuật
     local Translations = {
-        ["Auto Steel"] = "Tự Động Trộm",
+        ["Auto Steal"] = "Tự Động Trộm",
         ["Eggs"] = "Trứng",
         ["Progression"] = "Tiến Trình Phát Triển",
         ["Pets"] = "Thú Cưng (Pet)",
@@ -117,7 +117,7 @@ local function loadVietnamese()
         ["God Mode"] = "Chế Độ Bất Tử",
         ["Instant Steal"] = "Trộm Tức Thì",
         ["Glide Speed"] = "Tốc Độ Bay / Trượt",
-        ["Anti Treadmill"] = "Chống Đẩy Lùi Máy Chạy",
+        ["Anti Treadmill"] = "Chống Máy Chạy",
         ["Auto Steal Filter"] = "Bộ Lọc Trộm Trứng",
         ["Areas"] = "Khu Vực",
         ["Categories"] = "Thể Loại",
