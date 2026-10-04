@@ -91,7 +91,7 @@ local function loadVietnamese()
         ["Stats"] = "Thống Kê",
         ["Account"] = " Tài Khoản",
         ["Key status"] = "Loại Key",
-        ["Replace key"] = "Thay Đổi Key"
+        ["Replace key"] = "Thay Đổi Key",
         ["Auto Steal"] = "Tự Động Trộm",
         ["Eggs"] = "Trứng",
         ["Progression"] = "Tiến Trình Phát Triển",
